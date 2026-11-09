@@ -1,0 +1,33 @@
+# Argo CD Application (the classroom's personal p1-... Application). scripts/setup-cluster.sh fills the two
+# __TOKENS__ from scripts/p1.env and `git remote get-url origin`, then applies it.
+# The core install has no API server to create the `default` project, so it is declared here (Argo CD's own defaults).
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: default
+  namespace: argocd
+spec:
+  sourceRepos: ["*"]
+  destinations:
+  - server: "*"
+    namespace: "*"
+  clusterResourceWhitelist:
+  - group: "*"
+    kind: "*"
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: __P1_NAMESPACE__
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: __REPO_URL__
+    targetRevision: main
+    path: configuration/app
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: __P1_NAMESPACE__
+  # No automated sync: as in the classroom, you choose the reviewed revision with
+  #   argocd --core app sync "$P1_NAMESPACE" --revision "$P1_REVISION"

@@ -1,0 +1,13 @@
+# Prepared Loki/Grafana (the classroom facilitator's observation services), rebuilt for minikube.
+# Applied by scripts/setup-cluster.sh with `kubectl apply -k observability`; not managed by your Argo Application.
+namespace: observability
+resources:
+- stack.yaml
+configMapGenerator:
+- name: grafana-datasources
+  files:
+  - grafana-provisioning/datasources/loki.yaml
+- name: grafana-dashboards
+  files:
+  - grafana-provisioning/dashboards/provider.yaml
+  - grafana-provisioning/dashboards/w110-requests.json

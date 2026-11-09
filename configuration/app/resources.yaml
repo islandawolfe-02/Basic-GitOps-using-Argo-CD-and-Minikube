@@ -1,0 +1,68 @@
+# P1 guided Kubernetes resources (copy to configuration/app/resources.yaml; you own the copy).
+# Replace the three PLACEHOLDER values (image label from the facilitator's import, cluster Loki URL, session),
+# choose LAB_ENV, keep the resource names, one replica and the processor-count setting.
+# If you change the ConfigMap later, increment academy/config-revision in the Pod template IN THE SAME COMMIT
+# so reconciliation creates a fresh Pod (a ConfigMap edit alone does not rewrite a running process's environment).
+apiVersion: v1
+kind: List
+items:
+- apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: foundation-settings
+  data:
+    LAB_ENV: "workshop-blue"                         # public label: workshop-blue or workshop-green
+    LAB_SESSION: "REPLACE_WITH_P1_SESSION"            # your P1_SESSION value (public stream label)
+    LOCAL_LOKI_URL: "REPLACE_WITH_P1_CLUSTER_LOKI_URL" # P1_CLUSTER_LOKI_URL from the environment session
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: foundation
+    labels:
+      app: foundation
+  spec:
+    replicas: 1
+    selector:
+      matchLabels:
+        app: foundation
+    template:
+      metadata:
+        labels:
+          app: foundation
+        annotations:
+          academy/config-revision: "1"
+      spec:
+        containers:
+        - name: foundation
+          image: REPLACE_WITH_IMPORTED_IMAGE_LABEL      # e.g. the exact label the facilitator imported
+          imagePullPolicy: Never                         # prepared local image import; not a BP registry policy
+          ports:
+          - name: http
+            containerPort: 8080
+          envFrom:
+          - configMapRef:
+              name: foundation-settings
+          env:
+          - name: DOTNET_PROCESSOR_COUNT                 # supplied setting for the shared classroom
+            value: "1"
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            periodSeconds: 10
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: foundation
+  spec:
+    selector:
+      app: foundation
+    ports:
+    - name: http
+      port: 8080
+      targetPort: http

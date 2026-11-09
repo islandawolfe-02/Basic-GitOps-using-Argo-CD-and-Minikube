@@ -1,0 +1,16 @@
+# Build output (never submitted)
+publish/
+**/bin/
+**/obj/
+
+# Personal step-by-step notes, kept off GitHub
+instructions.md
+
+# Cluster access and credentials never enter the repository
+kubeconfig*
+*.kubeconfig
+.env.local
+
+# Local runtime state
+*.tar
+.DS_Store

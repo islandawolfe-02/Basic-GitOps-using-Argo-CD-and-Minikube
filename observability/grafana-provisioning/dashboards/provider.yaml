@@ -1,0 +1,6 @@
+apiVersion: 1
+providers:
+  - name: w110
+    type: file
+    options:
+      path: /etc/grafana/provisioning/dashboards

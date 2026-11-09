@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <!-- Supplied foundation application (W1.10 observe release, used by P1). Course pin: .NET SDK 10.0.401, target net10.0. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>Foundation</AssemblyName>
+    <RootNamespace>Foundation</RootNamespace>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <!-- Keep the published page byte-for-byte as supplied (no pre-compressed copies). -->
+    <CompressionEnabled>false</CompressionEnabled>
+    <!-- `dotnet publish -o publish` writes inside this folder; never treat that output as source. -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);publish/**</DefaultItemExcludes>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Remove="global.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- The reference board travels with the published files. -->
+    <None Include="data/board-reference.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

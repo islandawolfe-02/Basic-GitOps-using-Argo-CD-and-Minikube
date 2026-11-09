@@ -1,0 +1,14 @@
+body { font-family: system-ui, sans-serif; margin: 0; background: #f6f7f4; color: #1d2b1f; }
+main { max-width: 46rem; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+h1 { margin-top: 0; }
+.lead, .small { color: #3d4f40; }
+.small { font-size: 0.9rem; }
+table.board { border-collapse: collapse; margin: 0.5rem 0; }
+table.board td { width: 7.5rem; height: 3.5rem; border: 2px solid #2f6b3a; text-align: center; font-size: 0.85rem; background: #fff; }
+table.board td.wall { background: #3d4f40; color: #fff; }
+label { font-weight: 600; margin-right: 0.5rem; }
+select, button { font-size: 1rem; padding: 0.35rem 0.6rem; }
+button { background: #2f6b3a; color: #fff; border: 0; border-radius: 4px; cursor: pointer; }
+button:focus-visible, select:focus-visible { outline: 3px solid #f2b705; outline-offset: 2px; }
+#status { font-weight: 700; margin-top: 1rem; }
+pre { background: #fff; border: 1px solid #c9d3c6; padding: 0.75rem; overflow-x: auto; }

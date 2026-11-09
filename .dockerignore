@@ -1,0 +1,7 @@
+.git
+**/bin
+**/obj
+publish
+evidence
+runtime.env
+instructions.md
