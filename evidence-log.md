@@ -17,21 +17,35 @@ replacement for the classroom environment). Operator / predictor: islandawolfe-0
 
 ### Planned request path
 
-```text
-Browser on my Mac: http://127.0.0.1:18081
-  → kubectl port-forward service/foundation 18081:8080
-  → Kubernetes API server
-  → selected Pod, port 8080
-  ← page and board response from /api/boards/reference
+```mermaid
+flowchart TB
+  subgraph MAC["My Mac"]
+    B["Browser<br/>http://127.0.0.1:18081<br/>GET / and GET /api/boards/reference"]
+    PF["kubectl port-forward<br/>service/foundation 18081:8080"]
+  end
 
-Pod selection:
-  Service foundation, port 8080
-    → selector app: foundation
-    → matching Pod managed by Deployment foundation, port 8080
+  subgraph CLUSTER["minikube — planned deployment"]
+    API["Kubernetes API server<br/>port-forward tunnel"]
+    subgraph APP["Namespace: p1-islandawolfe-02"]
+      S["Service: foundation<br/>port 8080 → targetPort http<br/>selector: app=foundation"]
+      P["Pod managed by Deployment foundation<br/>label: app=foundation<br/>named port http: 8080<br/>serves page, board API and /healthz"]
+    end
+    subgraph OBS["Namespace: observability"]
+      L[("Loki<br/>request records")]
+      G["Grafana<br/>inspect matching request ID"]
+    end
+  end
 
-Logs (separate path):
-  Pod → Loki → I read them in Grafana
+  B <-->|"HTTP requests / page and JSON responses"| PF
+  PF <-->|"tunnel"| API
+  API <-->|"forwarded connection to Pod:8080"| P
+  PF -. "uses Service to find a matching Pod" .-> S
+  S -. "selects by label; not a tunnel hop" .-> P
+  P -->|"push completion records<br/>session + request_id"| L
+  G -->|"query records"| L
 ```
+
+Solid lines show the request/response tunnel and the separate logging path. Dotted lines show Pod selection.
 
 The page and the API come from the same Pod, through the same address. The logs do not go back to the browser;
 they go to Loki on their own path. With `kubectl port-forward service/foundation`, the Service's selector is used
