@@ -1,0 +1,12 @@
+PASS GET /healthz -> Healthy
+PASS GET / -> 200 foundation page
+PASS GET /app.js -> 200, equals app/wwwroot/app.js
+PASS GET /api/boards/reference -> 200
+PASS reference body equals app/data/board-reference.json (3x3, 6 initial moves)
+PASS X-Lab-Release: foundation-observe-a
+PASS X-Lab-Environment: workshop-blue
+PASS X-Request-Id echoed: smoke-20261113T114506Z-67882
+PASS GET /api/boards/missing -> 404 NOT_FOUND
+request_id=smoke-20261113T114506Z-67882  (Grafana: {job="academy-w110", session="<P1_SESSION>"} | json | request_id="smoke-20261113T114506Z-67882")
+evidence files: evidence/m2-local
+RESULT: PASS
