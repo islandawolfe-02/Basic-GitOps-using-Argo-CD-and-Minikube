@@ -1,6 +1,6 @@
 {
   "uid": "w110-requests",
-  "title": "W1.10 requests",
+  "title": "P1 Foundation requests",
   "time": { "from": "now-1h", "to": "now" },
   "templating": { "list": [
     { "name": "session", "type": "textbox", "label": "Workspace session", "query": "p1-islandawolfe-02-mac" },

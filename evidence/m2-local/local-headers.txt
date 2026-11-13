@@ -1,0 +1,9 @@
+HTTP/1.1 200 OK
+Content-Length: 267
+Content-Type: application/json
+Date: Fri, 13 Nov 2026 11:44:44 GMT
+Server: Kestrel
+X-Lab-Release: foundation-observe-a
+X-Lab-Environment: workshop-blue
+X-Request-Id: bfd802d4-30c2-4ff2-b4a5-303135e31f1b
+
