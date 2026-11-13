@@ -4,7 +4,7 @@ Route: personal minikube on a MacBook Air M2, with GitHub PRs and Argo CD v3.5.2
 replacement for the classroom environment). Operator / predictor: islandawolfe-02 for both (solo, self-reviewed).
 
 ## 1. Plan and baseline (write before Milestone 2)
-* Game intention (do not implement; reference: treasure hunt): each turn, the player moves one square up, down, left
+* Game intention: each turn, the player moves one square up, down, left
   or right. The game tracks the player's position, remaining moves (starting at 6), collected treasures and score
   (the treasure is worth 10). The player wins by reaching the exit square and loses if moves run out before reaching
   the exit. A wall blocks the player; a blocked move does not use up a move.
