@@ -1,0 +1,34 @@
+TIMESTAMP                  GROUP        KIND   NAMESPACE                          NAME    STATUS    HEALTH        HOOK  MESSAGE
+2026-11-14T21:27:41+05:30          ConfigMap  p1-islandawolfe-02   foundation-settings    Synced                        
+2026-11-14T21:27:41+05:30            Service  p1-islandawolfe-02            foundation  OutOfSync  Healthy              
+2026-11-14T21:27:41+05:30   apps  Deployment  p1-islandawolfe-02            foundation    Synced   Healthy              
+2026-11-14T21:27:42+05:30          ConfigMap  p1-islandawolfe-02   foundation-settings    Synced                        configmap/foundation-settings unchanged
+2026-11-14T21:27:42+05:30            Service  p1-islandawolfe-02            foundation  OutOfSync  Healthy              service/foundation configured
+2026-11-14T21:27:42+05:30   apps  Deployment  p1-islandawolfe-02            foundation    Synced   Healthy              deployment.apps/foundation unchanged
+
+Name:               argocd/p1-islandawolfe-02
+Project:            default
+Server:             https://kubernetes.default.svc
+Namespace:          p1-islandawolfe-02
+URL:                http://localhost:58650/applications/p1-islandawolfe-02
+Source:
+- Repo:             https://github.com/islandawolfe-02/Basic-GitOps-using-Argo-CD-and-Minikube.git
+  Target:           main
+  Path:             configuration/app
+SyncWindow:         Sync Allowed
+Sync Policy:        Manual
+Sync Status:        Synced to main (758e954)
+Health Status:      Healthy
+
+Operation:          Sync
+Sync Revision:      758e954c73aeeb56656d48e00de32ea6d2150071
+Phase:              Succeeded
+Start:              2026-11-14 21:27:41 +0530 IST
+Finished:           2026-11-14 21:27:42 +0530 IST
+Duration:           1s
+Message:            successfully synced (all tasks run)
+
+GROUP  KIND        NAMESPACE           NAME                 STATUS  HEALTH   HOOK  MESSAGE
+       ConfigMap   p1-islandawolfe-02  foundation-settings  Synced                 configmap/foundation-settings unchanged
+       Service     p1-islandawolfe-02  foundation           Synced  Healthy        service/foundation configured
+apps   Deployment  p1-islandawolfe-02  foundation           Synced  Healthy        deployment.apps/foundation unchanged
