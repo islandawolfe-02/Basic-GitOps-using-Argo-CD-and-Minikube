@@ -150,7 +150,7 @@ The learner saved the final browser observation, Pod logs and Grafana screenshot
 
 ## 5.1 Selector failure
 
-Status: pending deployment and observation on personal minikube.
+Status: executed on personal minikube on 2026-11-14; failure reproduced, recovery pending.
 
 Prediction (before sync):
 
@@ -162,7 +162,21 @@ Prediction (before sync):
 * Rebuilding the image would not fix this failure. Restoring the Service selector to `app: foundation` should
   allow it to find the Pod again.
 
-Observed after sync: pending. Record the actual Pod state, endpoints and new port-forward result here.
+Observed after sync:
+
+* Failure revision: `758e954c73aeeb56656d48e00de32ea6d2150071` (`failure-revision.txt`).
+* Argo sync succeeded at `2026-11-14T15:57:42Z` (`21:27:42 +05:30`). The Service was configured;
+  the ConfigMap and Deployment were unchanged (`sync.txt`).
+* Argo reported **Synced / Healthy** at the failure revision. This did not mean the Service could reach the Pod.
+* The same Pod, `foundation-7d5c485f7d-bdp6l`, remained `1/1 Running` with zero restarts and IP `10.244.0.95`
+  (`state.txt`).
+* EndpointSlice `foundation-s5c8v` showed `<unset>` for both ports and endpoints; no endpoint address was listed
+  (`state.txt`).
+* The fresh Service port-forward failed with `error: timed out waiting for the condition` (`port-forward.txt`).
+
+The observations match the prediction: the Pod stayed healthy, but the Service selector matched no Pod.
+The fault is in the Service configuration; rebuilding the image would not repair it. Recovery through a
+corrective PR is still pending.
 
 Evidence: `evidence/m5-failure/`.
 
@@ -172,7 +186,7 @@ Evidence: `evidence/m5-failure/`.
 | 2026-11-13 11:45:51 (browser request) | 2 local image ID / smoke / Grafana row | Local build and smoke PASS; browser request `3eb04f34-04e4-46f2-87d1-96cce6f58569` matches logs and Grafana screenshot. Full source/image IDs and settings explanation above. | [evidence/m2-local/](evidence/m2-local/) |
 | 2026-11-14 13:43:41 (merge) | 3 deployment proposal | PR #3 merged as `8ae88b2f112824f7aef4dc3d0ef51eeb941335b2`; image IDs match and both CI gates passed. Separate self-review decision missing. See section 3. | [PR #3](https://github.com/islandawolfe-02/Basic-GitOps-using-Argo-CD-and-Minikube/pull/3) |
 | 2026-11-14 14:05:10 (browser request) | 4 deployment verification | Argo Synced/Healthy; image SHA and endpoint match; smoke PASS; request `71365f70-a24a-4872-89be-5935c0e88ed8` matches browser, Pod logs and Grafana. See section 4. | [evidence/m4-deploy/](evidence/m4-deploy/) |
-| | 5 failure: prediction, empty endpoints, failed port-forward, healthy Pod | Prediction recorded in section 5.1; deployment and observations pending. | evidence/m5-failure/ |
+| 2026-11-14 15:57:42 (sync completed) | 5 selector failure | Revision `758e954c73aeeb56656d48e00de32ea6d2150071` synced; same Pod remained 1/1 Running with zero restarts; EndpointSlice endpoints unset; fresh port-forward timed out. Prediction matched. See section 5.1. | [evidence/m5-failure/](evidence/m5-failure/) |
 | | 5 recovery: corrective revision, fresh request | | evidence/m5-recovery/ |
 | | 5 blue → green: annotation bump, header | | evidence/m5-green/ |
 | | 6 fresh-clone reproduction: image ID, comparison | | evidence/m6-reproduce/ |
