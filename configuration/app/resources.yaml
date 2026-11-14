@@ -12,8 +12,8 @@ items:
     name: foundation-settings
   data:
     LAB_ENV: "workshop-blue"                         # public label: workshop-blue or workshop-green
-    LAB_SESSION: "REPLACE_WITH_P1_SESSION"            # your P1_SESSION value (public stream label)
-    LOCAL_LOKI_URL: "REPLACE_WITH_P1_CLUSTER_LOKI_URL" # P1_CLUSTER_LOKI_URL from the environment session
+    LAB_SESSION: "p1-islandawolfe-02-mac"            # your P1_SESSION value (public stream label)
+    LOCAL_LOKI_URL: "http://loki.observability.svc.cluster.local:3100" # P1_CLUSTER_LOKI_URL from the environment session
 - apiVersion: apps/v1
   kind: Deployment
   metadata:
@@ -30,11 +30,11 @@ items:
         labels:
           app: foundation
         annotations:
-          academy/config-revision: "1"
+          academy/config-revision: "2"
       spec:
         containers:
         - name: foundation
-          image: REPLACE_WITH_IMPORTED_IMAGE_LABEL      # e.g. the exact label the facilitator imported
+          image: localhost/p1-islandawolfe-02:foundation-a      # e.g. the exact label the facilitator imported
           imagePullPolicy: Never                         # prepared local image import; not a BP registry policy
           ports:
           - name: http
