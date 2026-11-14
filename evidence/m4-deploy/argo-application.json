@@ -1,0 +1,166 @@
+{
+    "apiVersion": "argoproj.io/v1alpha1",
+    "kind": "Application",
+    "metadata": {
+        "annotations": {
+            "argocd.argoproj.io/hydrate": "normal",
+            "argocd.argoproj.io/hydrate-timestamp": "2026-11-14T19:19:34.211352+05:30",
+            "argocd.argoproj.io/refresh-timestamp": "2026-11-14T19:19:34.211352+05:30",
+            "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"argoproj.io/v1alpha1\",\"kind\":\"Application\",\"metadata\":{\"annotations\":{},\"name\":\"p1-islandawolfe-02\",\"namespace\":\"argocd\"},\"spec\":{\"destination\":{\"namespace\":\"p1-islandawolfe-02\",\"server\":\"https://kubernetes.default.svc\"},\"project\":\"default\",\"source\":{\"path\":\"configuration/app\",\"repoURL\":\"https://github.com/islandawolfe-02/Basic-GitOps-using-Argo-CD-and-Minikube.git\",\"targetRevision\":\"main\"}}}\n"
+        },
+        "creationTimestamp": "2026-11-13T07:09:10Z",
+        "generation": 108,
+        "name": "p1-islandawolfe-02",
+        "namespace": "argocd",
+        "resourceVersion": "32735",
+        "uid": "d2244960-a1e7-4956-8069-3c442b52b9af"
+    },
+    "spec": {
+        "destination": {
+            "namespace": "p1-islandawolfe-02",
+            "server": "https://kubernetes.default.svc"
+        },
+        "project": "default",
+        "source": {
+            "path": "configuration/app",
+            "repoURL": "https://github.com/islandawolfe-02/Basic-GitOps-using-Argo-CD-and-Minikube.git",
+            "targetRevision": "main"
+        }
+    },
+    "status": {
+        "controllerNamespace": "argocd",
+        "health": {
+            "lastTransitionTime": "2026-11-14T13:49:36Z",
+            "status": "Healthy"
+        },
+        "history": [
+            {
+                "deployStartedAt": "2026-11-14T13:49:33Z",
+                "deployedAt": "2026-11-14T13:49:33Z",
+                "id": 0,
+                "initiatedBy": {},
+                "revision": "8ae88b2f112824f7aef4dc3d0ef51eeb941335b2",
+                "source": {
+                    "path": "configuration/app",
+                    "repoURL": "https://github.com/islandawolfe-02/Basic-GitOps-using-Argo-CD-and-Minikube.git",
+                    "targetRevision": "main"
+                }
+            }
+        ],
+        "operationState": {
+            "finishedAt": "2026-11-14T13:49:33Z",
+            "message": "successfully synced (all tasks run)",
+            "operation": {
+                "initiatedBy": {},
+                "retry": {},
+                "sync": {
+                    "revision": "8ae88b2f112824f7aef4dc3d0ef51eeb941335b2",
+                    "source": {
+                        "path": "configuration/app",
+                        "repoURL": "https://github.com/islandawolfe-02/Basic-GitOps-using-Argo-CD-and-Minikube.git",
+                        "targetRevision": "main"
+                    },
+                    "syncStrategy": {
+                        "hook": {}
+                    }
+                }
+            },
+            "phase": "Succeeded",
+            "startedAt": "2026-11-14T13:49:33Z",
+            "syncResult": {
+                "resources": [
+                    {
+                        "group": "",
+                        "hookPhase": "Running",
+                        "kind": "ConfigMap",
+                        "message": "configmap/foundation-settings created",
+                        "name": "foundation-settings",
+                        "namespace": "p1-islandawolfe-02",
+                        "status": "Synced",
+                        "syncPhase": "Sync",
+                        "version": "v1"
+                    },
+                    {
+                        "group": "",
+                        "hookPhase": "Running",
+                        "kind": "Service",
+                        "message": "service/foundation created",
+                        "name": "foundation",
+                        "namespace": "p1-islandawolfe-02",
+                        "status": "Synced",
+                        "syncPhase": "Sync",
+                        "version": "v1"
+                    },
+                    {
+                        "group": "apps",
+                        "hookPhase": "Running",
+                        "images": [
+                            "localhost/p1-islandawolfe-02:foundation-a"
+                        ],
+                        "kind": "Deployment",
+                        "message": "deployment.apps/foundation created",
+                        "name": "foundation",
+                        "namespace": "p1-islandawolfe-02",
+                        "status": "Synced",
+                        "syncPhase": "Sync",
+                        "version": "v1"
+                    }
+                ],
+                "revision": "8ae88b2f112824f7aef4dc3d0ef51eeb941335b2",
+                "source": {
+                    "path": "configuration/app",
+                    "repoURL": "https://github.com/islandawolfe-02/Basic-GitOps-using-Argo-CD-and-Minikube.git",
+                    "targetRevision": "main"
+                }
+            }
+        },
+        "reconciledAt": "2026-11-14T13:49:34Z",
+        "resourceHealthSource": "appTree",
+        "resources": [
+            {
+                "kind": "ConfigMap",
+                "name": "foundation-settings",
+                "namespace": "p1-islandawolfe-02",
+                "status": "Synced",
+                "version": "v1"
+            },
+            {
+                "kind": "Service",
+                "name": "foundation",
+                "namespace": "p1-islandawolfe-02",
+                "status": "Synced",
+                "version": "v1"
+            },
+            {
+                "group": "apps",
+                "kind": "Deployment",
+                "name": "foundation",
+                "namespace": "p1-islandawolfe-02",
+                "status": "Synced",
+                "version": "v1"
+            }
+        ],
+        "sourceHydrator": {},
+        "sourceType": "Directory",
+        "summary": {
+            "images": [
+                "localhost/p1-islandawolfe-02:foundation-a"
+            ]
+        },
+        "sync": {
+            "comparedTo": {
+                "destination": {
+                    "namespace": "p1-islandawolfe-02",
+                    "server": "https://kubernetes.default.svc"
+                },
+                "source": {
+                    "path": "configuration/app",
+                    "repoURL": "https://github.com/islandawolfe-02/Basic-GitOps-using-Argo-CD-and-Minikube.git",
+                    "targetRevision": "main"
+                }
+            },
+            "revision": "8ae88b2f112824f7aef4dc3d0ef51eeb941335b2",
+            "status": "Synced"
+        }
+    }
+}

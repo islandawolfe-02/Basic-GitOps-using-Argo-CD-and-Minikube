@@ -1,0 +1,9 @@
+Argo revision: 8ae88b2f112824f7aef4dc3d0ef51eeb941335b2
+Argo status: Synced / Healthy
+Pod: foundation-7d5c485f7d-bdp6l
+Pod image ID: docker://sha256:e563cb59f857747b351e1a10664086a2a49b2645a1b0b3c45d06ae82d83b4947
+Recorded Mac image ID: sha256:e563cb59f857747b351e1a10664086a2a49b2645a1b0b3c45d06ae82d83b4947
+Image ID match: PASS
+Pod IP: 10.244.0.95
+Ready endpoint IPs: 10.244.0.95
+Endpoint matches Pod: PASS

@@ -1,0 +1,20 @@
+
+Name:               argocd/p1-islandawolfe-02
+Project:            default
+Server:             https://kubernetes.default.svc
+Namespace:          p1-islandawolfe-02
+URL:                http://localhost:57382/applications/p1-islandawolfe-02
+Source:
+- Repo:             https://github.com/islandawolfe-02/Basic-GitOps-using-Argo-CD-and-Minikube.git
+  Target:           main
+  Path:             configuration/app
+SyncWindow:         Sync Allowed
+Sync Policy:        Manual
+Sync Status:        Synced to main (8ae88b2)
+Health Status:      Healthy
+
+
+GROUP  KIND        NAMESPACE           NAME                 STATUS  HEALTH   HOOK  MESSAGE
+       ConfigMap   p1-islandawolfe-02  foundation-settings  Synced                 configmap/foundation-settings created
+       Service     p1-islandawolfe-02  foundation           Synced  Healthy        service/foundation created
+apps   Deployment  p1-islandawolfe-02  foundation           Synced  Healthy        deployment.apps/foundation created
