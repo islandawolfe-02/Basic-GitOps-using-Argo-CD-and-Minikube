@@ -67,8 +67,8 @@ port-forward terminology. The request path above is planned; no fresh deployment
 
 ## 2. Package and run locally
 
-Executed locally with Docker on the personal Mac on 2026-11-13. Loki and Grafana run on personal minikube;
-the foundation application has not yet been deployed to minikube.
+Executed locally with Docker on the personal Mac on 2026-11-13. Loki and Grafana ran on personal minikube;
+at this milestone, the foundation application had not yet been deployed to minikube.
 
 * Source commit: `5153f37a19a7e9326f2532817100eecc00eb29b6` (`evidence/m2-local/source-commit.txt`).
 * Image: `localhost/p1-islandawolfe-02:foundation-a`.
@@ -94,12 +94,66 @@ the foundation application has not yet been deployed to minikube.
 AI assistance: explained the settings, checked the saved evidence, helped diagnose Grafana access and time-range
 messages, and drafted the settings explanation.
 
+## 3. Review the deployment proposal
+
+Image import executed on personal minikube; proposal merged on 2026-11-14.
+
+* PR: [#3](https://github.com/islandawolfe-02/Basic-GitOps-using-Argo-CD-and-Minikube/pull/3), branch `m3-initial-deploy`.
+* Merged revision: `8ae88b2f112824f7aef4dc3d0ef51eeb941335b2`, merged at `2026-11-14T13:43:41Z`.
+* Replaced the image, `LAB_SESSION` and `LOCAL_LOKI_URL` placeholders in `configuration/app/resources.yaml`.
+  `academy/config-revision` is `"2"`; `LAB_ENV` remains `workshop-blue`.
+* Imported image ID: `sha256:e563cb59f857747b351e1a10664086a2a49b2645a1b0b3c45d06ae82d83b4947`.
+  The saved minikube ID matches the Mac ID from Milestone 2, ignoring the SSH carriage return
+  (`evidence/m2-local/minikube-image-id.txt` and `evidence/m2-local/image-id.txt`).
+* Local configuration check: `RESULT: PASS` (`evidence/m4-deploy/config-check.txt`).
+* CI: Package gate and Configuration gate both passed in
+  [p1-gates run 43601163480](https://github.com/islandawolfe-02/Basic-GitOps-using-Argo-CD-and-Minikube/actions/runs/43601163480).
+  The CI image is a separate amd64 build and was not deployed.
+* Self-review decision: ____ (no separate decision comment found on PR #3; the required pre-merge record is missing).
+
+## 4. Deploy through Argo CD
+
+Executed on personal minikube on 2026-11-14.
+
+* Reviewed revision: `8ae88b2f112824f7aef4dc3d0ef51eeb941335b2` (`deployed-revision.txt`).
+* `argocd --core app sync p1-islandawolfe-02 --revision <reviewed revision>` succeeded at
+  `2026-11-14T13:49:33Z`. Argo reports **Synced / Healthy** at that same revision
+  (`sync.txt`, `argo-app.txt`, `argo-application.json`).
+* Pod: `foundation-7d5c485f7d-bdp6l`, Running and Ready (`resources.txt`, `running-pods.json`).
+* Pod image ID: `docker://sha256:e563cb59f857747b351e1a10664086a2a49b2645a1b0b3c45d06ae82d83b4947`.
+  The SHA matches the Milestone 2 Mac image; `docker://` is the runtime prefix
+  (`pod-image-id.txt`, `identity-check.txt`).
+* Pod IP: `10.244.0.95`. EndpointSlice `foundation-s5c8v` has the same ready endpoint IP
+  (`resources.txt`, `endpointslices.json`).
+* Access: `kubectl -n p1-islandawolfe-02 port-forward service/foundation 18081:8080`.
+  The browser uses `http://127.0.0.1:18081` (`port-forward.txt`).
+* Smoke check: `bash scripts/smoke.sh http://127.0.0.1:18081 workshop-blue evidence/m4-deploy` returned
+  `RESULT: PASS`. Health, page, app.js, exact reference body, release/environment headers, request-ID echo and
+  missing-board 404 all passed (`smoke.txt`).
+* Browser: Reference returned 200, release `foundation-observe-a`, environment `workshop-blue`.
+  The action took 103 ms; its one attempt took 99 ms (`browser-observation.json`).
+* Browser request ID: `71365f70-a24a-4872-89be-5935c0e88ed8`.
+* Matching Pod log: `2026-11-14T14:05:10.5802682Z`, path `/api/boards/reference`, status 200,
+  server duration 2 ms. No `LOKI_DELIVERY_WARNING` appears in the saved logs (`pod-logs.txt`).
+* Grafana: `grafana.png` shows the same request ID, timestamp, session `p1-islandawolfe-02-mac`, status 200,
+  release and environment in the **P1 Foundation requests** dashboard.
+
+The Argo revision matches the reviewed revision; the Pod image SHA matches the Mac image; the ready endpoint
+matches the Pod IP; and the body, release and environment checks pass. The port-forward tunnels requests from
+the Mac through the Kubernetes API server to a Pod selected using the foundation Service. It is not an ingress.
+
+All filenames in this section are under `evidence/m4-deploy/`. These are personal minikube results; BP deployment
+remains pending.
+
+AI assistance: ran the Argo sync, smoke and identity checks, checked the saved evidence, and updated this log.
+The learner saved the final browser observation, Pod logs and Grafana screenshot.
+
 ## Milestone log
 | Time (UTC) | Milestone | Observation (command, result, identifiers) | Evidence file |
 |---|---|---|---|
 | 2026-11-13 11:45:51 (browser request) | 2 local image ID / smoke / Grafana row | Local build and smoke PASS; browser request `3eb04f34-04e4-46f2-87d1-96cce6f58569` matches logs and Grafana screenshot. Full source/image IDs and settings explanation above. | [evidence/m2-local/](evidence/m2-local/) |
-| | 3 review decision (PR #, full commit) | | PR link |
-| | 4 Argo revision / Pod image ID / endpoint / response / Grafana row | | evidence/m4-deploy/ |
+| 2026-11-14 13:43:41 (merge) | 3 deployment proposal | PR #3 merged as `8ae88b2f112824f7aef4dc3d0ef51eeb941335b2`; image IDs match and both CI gates passed. Separate self-review decision missing. See section 3. | [PR #3](https://github.com/islandawolfe-02/Basic-GitOps-using-Argo-CD-and-Minikube/pull/3) |
+| 2026-11-14 14:05:10 (browser request) | 4 deployment verification | Argo Synced/Healthy; image SHA and endpoint match; smoke PASS; request `71365f70-a24a-4872-89be-5935c0e88ed8` matches browser, Pod logs and Grafana. See section 4. | [evidence/m4-deploy/](evidence/m4-deploy/) |
 | | 5 failure: prediction, empty endpoints, failed port-forward, healthy Pod | | evidence/m5-failure/ |
 | | 5 recovery: corrective revision, fresh request | | evidence/m5-recovery/ |
 | | 5 blue → green: annotation bump, header | | evidence/m5-green/ |

@@ -1,0 +1,66 @@
+{
+    "apiVersion": "v1",
+    "items": [
+        {
+            "addressType": "IPv4",
+            "apiVersion": "discovery.k8s.io/v1",
+            "endpoints": [
+                {
+                    "addresses": [
+                        "10.244.0.95"
+                    ],
+                    "conditions": {
+                        "ready": true,
+                        "serving": true,
+                        "terminating": false
+                    },
+                    "nodeName": "minikube",
+                    "targetRef": {
+                        "kind": "Pod",
+                        "name": "foundation-7d5c485f7d-bdp6l",
+                        "namespace": "p1-islandawolfe-02",
+                        "uid": "7d20d601-9894-48cf-854b-fe54458a4646"
+                    }
+                }
+            ],
+            "kind": "EndpointSlice",
+            "metadata": {
+                "annotations": {
+                    "endpoints.kubernetes.io/last-change-trigger-time": "2026-11-14T13:49:36Z"
+                },
+                "creationTimestamp": "2026-11-14T13:49:33Z",
+                "generateName": "foundation-",
+                "generation": 3,
+                "labels": {
+                    "endpointslice.kubernetes.io/managed-by": "endpointslice-controller.k8s.io",
+                    "kubernetes.io/service-name": "foundation"
+                },
+                "name": "foundation-s5c8v",
+                "namespace": "p1-islandawolfe-02",
+                "ownerReferences": [
+                    {
+                        "apiVersion": "v1",
+                        "blockOwnerDeletion": true,
+                        "controller": true,
+                        "kind": "Service",
+                        "name": "foundation",
+                        "uid": "b041dbbb-2a45-4fa0-a32b-65a0c138b2f8"
+                    }
+                ],
+                "resourceVersion": "32730",
+                "uid": "f5ca4f97-d860-4de0-9b63-145122e450d9"
+            },
+            "ports": [
+                {
+                    "name": "http",
+                    "port": 8080,
+                    "protocol": "TCP"
+                }
+            ]
+        }
+    ],
+    "kind": "List",
+    "metadata": {
+        "resourceVersion": ""
+    }
+}
