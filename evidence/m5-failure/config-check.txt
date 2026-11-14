@@ -1,0 +1,11 @@
+PASS no REPLACE_WITH_ placeholders
+PASS image = localhost/p1-islandawolfe-02:foundation-a
+PASS LAB_SESSION = p1-islandawolfe-02-mac
+PASS LOCAL_LOKI_URL = http://loki.observability.svc.cluster.local:3100
+PASS LAB_ENV = workshop-blue
+PASS runtime.env LAB_ENV matches the ConfigMap
+PASS replicas = 1
+PASS imagePullPolicy = Never (local image import)
+FAIL Service selector app=foundation-missing does not match Pod template label app=foundation (the Service will have no endpoints)
+PASS client.json deadlineMs=450 retries=0 (budget 450 <= 650)
+RESULT: FAIL (1 check(s))

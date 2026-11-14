@@ -148,13 +148,31 @@ remains pending.
 AI assistance: ran the Argo sync, smoke and identity checks, checked the saved evidence, and updated this log.
 The learner saved the final browser observation, Pod logs and Grafana screenshot.
 
+## 5.1 Selector failure
+
+Status: pending deployment and observation on personal minikube.
+
+Prediction (before sync):
+
+* Changing the Service selector to `app: foundation-missing` should leave the foundation Pod Running and Ready,
+  because the Deployment and health probes are unchanged.
+* The Service should have no ready endpoints because its selector matches no Pod.
+* A new `kubectl port-forward service/foundation 18081:8080` should fail or time out because it cannot find a
+  matching Pod. The old port-forward must be stopped first; an existing tunnel may still reach its selected Pod.
+* Rebuilding the image would not fix this failure. Restoring the Service selector to `app: foundation` should
+  allow it to find the Pod again.
+
+Observed after sync: pending. Record the actual Pod state, endpoints and new port-forward result here.
+
+Evidence: `evidence/m5-failure/`.
+
 ## Milestone log
 | Time (UTC) | Milestone | Observation (command, result, identifiers) | Evidence file |
 |---|---|---|---|
 | 2026-11-13 11:45:51 (browser request) | 2 local image ID / smoke / Grafana row | Local build and smoke PASS; browser request `3eb04f34-04e4-46f2-87d1-96cce6f58569` matches logs and Grafana screenshot. Full source/image IDs and settings explanation above. | [evidence/m2-local/](evidence/m2-local/) |
 | 2026-11-14 13:43:41 (merge) | 3 deployment proposal | PR #3 merged as `8ae88b2f112824f7aef4dc3d0ef51eeb941335b2`; image IDs match and both CI gates passed. Separate self-review decision missing. See section 3. | [PR #3](https://github.com/islandawolfe-02/Basic-GitOps-using-Argo-CD-and-Minikube/pull/3) |
 | 2026-11-14 14:05:10 (browser request) | 4 deployment verification | Argo Synced/Healthy; image SHA and endpoint match; smoke PASS; request `71365f70-a24a-4872-89be-5935c0e88ed8` matches browser, Pod logs and Grafana. See section 4. | [evidence/m4-deploy/](evidence/m4-deploy/) |
-| | 5 failure: prediction, empty endpoints, failed port-forward, healthy Pod | | evidence/m5-failure/ |
+| | 5 failure: prediction, empty endpoints, failed port-forward, healthy Pod | Prediction recorded in section 5.1; deployment and observations pending. | evidence/m5-failure/ |
 | | 5 recovery: corrective revision, fresh request | | evidence/m5-recovery/ |
 | | 5 blue → green: annotation bump, header | | evidence/m5-green/ |
 | | 6 fresh-clone reproduction: image ID, comparison | | evidence/m6-reproduce/ |
