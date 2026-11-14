@@ -1,0 +1,11 @@
+PASS no REPLACE_WITH_ placeholders
+PASS image = localhost/p1-islandawolfe-02:foundation-a
+PASS LAB_SESSION = p1-islandawolfe-02-mac
+PASS LOCAL_LOKI_URL = http://loki.observability.svc.cluster.local:3100
+PASS LAB_ENV = workshop-blue
+PASS runtime.env LAB_ENV matches the ConfigMap
+PASS replicas = 1
+PASS imagePullPolicy = Never (local image import)
+PASS Service selector app=foundation matches the Pod template label
+PASS client.json deadlineMs=450 retries=0 (budget 450 <= 650)
+RESULT: PASS
