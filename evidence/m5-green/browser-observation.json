@@ -1,0 +1,25 @@
+{
+  "action_id": "9963e92c-bb44-42f3-b4d8-8d61b37f8871",
+  "fixture": "reference",
+  "client": {
+    "deadlineMs": 450,
+    "retries": 0
+  },
+  "outcome": "received",
+  "received_status": 200,
+  "echoed_request_id": "1320ef47-3114-4cec-aa17-75a6c053910f",
+  "release": "foundation-observe-a",
+  "environment": "workshop-green",
+  "action_elapsed_ms": 62,
+  "attempts": [
+    {
+      "request_id": "1320ef47-3114-4cec-aa17-75a6c053910f",
+      "received": true,
+      "status": 200,
+      "echoed_request_id": "1320ef47-3114-4cec-aa17-75a6c053910f",
+      "release": "foundation-observe-a",
+      "environment": "workshop-green",
+      "elapsed_ms": 61
+    }
+  ]
+}
