@@ -1,0 +1,9 @@
+HTTP/1.1 200 OK
+Content-Length: 267
+Content-Type: application/json
+Date: Sat, 14 Nov 2026 16:40:46 GMT
+Server: Kestrel
+X-Lab-Release: foundation-observe-a
+X-Lab-Environment: workshop-blue
+X-Request-Id: smoke-20261114T164046Z-97811
+

@@ -1,0 +1,35 @@
+TIMESTAMP                  GROUP        KIND   NAMESPACE                          NAME    STATUS    HEALTH        HOOK  MESSAGE
+2026-11-14T22:03:26+05:30          ConfigMap  p1-islandawolfe-02   foundation-settings    Synced                        
+2026-11-14T22:03:26+05:30            Service  p1-islandawolfe-02            foundation  OutOfSync  Healthy              
+2026-11-14T22:03:26+05:30   apps  Deployment  p1-islandawolfe-02            foundation    Synced   Healthy              
+2026-11-14T22:03:27+05:30          ConfigMap  p1-islandawolfe-02   foundation-settings    Synced                        configmap/foundation-settings unchanged
+2026-11-14T22:03:27+05:30            Service  p1-islandawolfe-02            foundation  OutOfSync  Healthy              service/foundation configured
+2026-11-14T22:03:27+05:30   apps  Deployment  p1-islandawolfe-02            foundation    Synced   Healthy              deployment.apps/foundation unchanged
+2026-11-14T22:03:27+05:30            Service  p1-islandawolfe-02            foundation    Synced  Healthy              service/foundation configured
+
+Name:               argocd/p1-islandawolfe-02
+Project:            default
+Server:             https://kubernetes.default.svc
+Namespace:          p1-islandawolfe-02
+URL:                http://localhost:59057/applications/p1-islandawolfe-02
+Source:
+- Repo:             https://github.com/islandawolfe-02/Basic-GitOps-using-Argo-CD-and-Minikube.git
+  Target:           main
+  Path:             configuration/app
+SyncWindow:         Sync Allowed
+Sync Policy:        Manual
+Sync Status:        Synced to main (35f31eb)
+Health Status:      Healthy
+
+Operation:          Sync
+Sync Revision:      35f31eb5c0aec482d4e44b6a47d370225555c7e5
+Phase:              Succeeded
+Start:              2026-11-14 22:03:26 +0530 IST
+Finished:           2026-11-14 22:03:27 +0530 IST
+Duration:           1s
+Message:            successfully synced (all tasks run)
+
+GROUP  KIND        NAMESPACE           NAME                 STATUS  HEALTH   HOOK  MESSAGE
+       ConfigMap   p1-islandawolfe-02  foundation-settings  Synced                 configmap/foundation-settings unchanged
+       Service     p1-islandawolfe-02  foundation           Synced  Healthy        service/foundation configured
+apps   Deployment  p1-islandawolfe-02  foundation           Synced  Healthy        deployment.apps/foundation unchanged
