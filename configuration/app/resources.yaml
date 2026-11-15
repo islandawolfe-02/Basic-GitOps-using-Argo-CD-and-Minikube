@@ -11,7 +11,7 @@ items:
     metadata:
       name: foundation-settings
     data:
-      LAB_ENV: "workshop-blue" # public label: workshop-blue or workshop-green
+      LAB_ENV: "workshop-green" # public label: workshop-blue or workshop-green
       LAB_SESSION: "p1-islandawolfe-02-mac" # your P1_SESSION value (public stream label)
       LOCAL_LOKI_URL: "http://loki.observability.svc.cluster.local:3100" # P1_CLUSTER_LOKI_URL from the environment session
   - apiVersion: apps/v1
@@ -30,7 +30,7 @@ items:
           labels:
             app: foundation
           annotations:
-            academy/config-revision: "2"
+            academy/config-revision: "3"
         spec:
           containers:
             - name: foundation
