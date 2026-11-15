@@ -1,0 +1,12 @@
+PASS GET /healthz -> Healthy
+PASS GET / -> 200 foundation page
+PASS GET /app.js -> 200, equals app/wwwroot/app.js
+PASS GET /api/boards/reference -> 200
+PASS reference body equals app/data/board-reference.json (3x3, 6 initial moves)
+PASS X-Lab-Release: foundation-observe-a
+PASS X-Lab-Environment: workshop-green
+PASS X-Request-Id echoed: smoke-20261115T163723Z-72646
+PASS GET /api/boards/missing -> 404 NOT_FOUND
+request_id=smoke-20261115T163723Z-72646  (Grafana: {job="academy-w110", session="<P1_SESSION>"} | json | request_id="smoke-20261115T163723Z-72646")
+evidence files: /Users/lawanlyngdoh/Documents/Codes/Repositories/Basic-Gitops-using-Argo-CD-and-Minikube/evidence/m6-reproduce/local
+RESULT: PASS
