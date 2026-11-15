@@ -212,7 +212,7 @@ Evidence: `evidence/m5-recovery/`. All filenames in this section refer to that d
 
 ## 5.3 Blue → green
 
-Status: executed on personal minikube on 2026-11-15; green deployment verified, evidence PR pending.
+Status: executed on personal minikube on 2026-11-15; green deployment verified, evidence merged in PR #10.
 
 * Configuration PR: [#9](https://github.com/islandawolfe-02/Basic-GitOps-using-Argo-CD-and-Minikube/pull/9).
   ConfigMap `LAB_ENV` and `runtime.env` changed to `workshop-green`, and `academy/config-revision` increased
@@ -240,9 +240,39 @@ Status: executed on personal minikube on 2026-11-15; green deployment verified, 
 
 The Pod-template annotation change produced a new Pod that read the green environment settings. The image,
 reference board and release stayed the same. The selector failure, recovery and environment-change checks
-are complete; committing and reviewing the green evidence remain pending.
+are complete. Green evidence was reviewed and merged in
+[PR #10](https://github.com/islandawolfe-02/Basic-GitOps-using-Argo-CD-and-Minikube/pull/10).
 
 Evidence: `evidence/m5-green/`. All filenames in this section refer to that directory.
+
+## 6. Reproduce and hand over
+
+Status: fresh-clone build and local verification executed on the personal Mac on 2026-11-15; handover PR pending.
+
+* README filled with the recorded versions, image IDs, deployment revisions, verification results and recovery
+  procedure. The missing separate self-review comment on PR #3 remains labelled as missing.
+* Installed tool versions saved in `tool-versions.txt`.
+* Fresh-clone source revision: `b835e85ad03dce1e595dd170db8f7a53e0102087` (`source-commit.txt`).
+* Source/configuration comparison: PASS. The application directory, Containerfile, runtime.env and
+  `configuration/app/resources.yaml` match the handover checkout (`comparison.txt`).
+* Configuration gate: `RESULT: PASS`, with `workshop-green` (`config-check.txt`).
+* Build succeeded and produced `localhost/p1-repro:foundation-a` with image ID
+  `sha256:a1d271bbbd7c4c2eb66d4683f72ea5f6d33fe9a111e6cbcfb4920d933d565eac` (`build.log`, `image-id.txt`).
+* This differs from the original checked Mac image
+  `sha256:e563cb59f857747b351e1a10664086a2a49b2645a1b0b3c45d06ae82d83b4947`. The comparison and checks passed;
+  no claim is made that the rebuild is byte-identical or was deployed to minikube.
+* Local reproduction container: `p1-repro-local`, tested at `http://127.0.0.1:18082`.
+* Smoke checks: `RESULT: PASS`, including health, page, app.js, exact reference body, release/environment headers,
+  request-ID echo and missing-board 404 (`smoke.txt`, `local/`).
+* Reference request ID: `smoke-20261115T163723Z-72646`. The response headers show 200,
+  `foundation-observe-a` and `workshop-green` (`local/reference-headers.txt`).
+* Matching local container completion record: `2026-11-15T16:37:23.6452694Z`, status 200, server duration 1 ms.
+  No `LOKI_DELIVERY_WARNING` appears in the saved reproduction `container.log`.
+
+Scope: a fresh-clone build and local run on the existing Mac. Cluster setup, Argo deployment and browser/Grafana
+checks were not repeated in this reproduction test; their Milestone 4 and 5 evidence remains separate.
+
+Evidence: `evidence/m6-reproduce/`. All filenames in this section refer to that directory.
 
 ## Milestone log
 | Time (UTC) | Milestone | Observation (command, result, identifiers) | Evidence file |
@@ -253,6 +283,6 @@ Evidence: `evidence/m5-green/`. All filenames in this section refer to that dire
 | 2026-11-14 15:57:42 (sync completed) | 5 selector failure | Revision `758e954c73aeeb56656d48e00de32ea6d2150071` synced; same Pod remained 1/1 Running with zero restarts; EndpointSlice endpoints unset; fresh port-forward timed out. Prediction matched. See section 5.1. | [evidence/m5-failure/](evidence/m5-failure/) |
 | 2026-11-14 16:42:13 (browser request) | 5 selector recovery | Revision `35f31eb5c0aec482d4e44b6a47d370225555c7e5` Synced/Healthy; endpoint restored to the same Pod; image unchanged; smoke PASS; request `b9e887fa-e252-4692-92db-137da62f2485` matches browser, Pod logs and Grafana. See section 5.2. | [evidence/m5-recovery/](evidence/m5-recovery/) |
 | 2026-11-15 15:41:58 (browser request) | 5 blue → green | Revision `2eeb5e125cb690fd89662e93a81c5aa09fbfa65e` Synced/Healthy; annotation 3 produced a new Pod; endpoint matches; image unchanged; smoke PASS; request `1320ef47-3114-4cec-aa17-75a6c053910f` matches browser, Pod logs and Grafana with workshop-green. See section 5.3. | [evidence/m5-green/](evidence/m5-green/) |
-| | 6 fresh-clone reproduction: image ID, comparison | | evidence/m6-reproduce/ |
+| 2026-11-15 16:37:23 (reference smoke request) | 6 fresh-clone reproduction | Source `b835e85ad03dce1e595dd170db8f7a53e0102087`; comparison and config PASS; rebuild ID differs from original; local smoke PASS. See section 6. Handover PR pending. | [evidence/m6-reproduce/](evidence/m6-reproduce/) |
 
 Individual reflection: assistance used ____; one rejected repair and why ____; one next learning step ____.
