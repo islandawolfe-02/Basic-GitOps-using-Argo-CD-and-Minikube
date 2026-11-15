@@ -1,0 +1,25 @@
+{
+  "action_id": "50dccf9d-e225-41b0-8792-c012b7045640",
+  "fixture": "reference",
+  "client": {
+    "deadlineMs": 450,
+    "retries": 0
+  },
+  "outcome": "received",
+  "received_status": 200,
+  "echoed_request_id": "b9e887fa-e252-4692-92db-137da62f2485",
+  "release": "foundation-observe-a",
+  "environment": "workshop-blue",
+  "action_elapsed_ms": 7,
+  "attempts": [
+    {
+      "request_id": "b9e887fa-e252-4692-92db-137da62f2485",
+      "received": true,
+      "status": 200,
+      "echoed_request_id": "b9e887fa-e252-4692-92db-137da62f2485",
+      "release": "foundation-observe-a",
+      "environment": "workshop-blue",
+      "elapsed_ms": 6
+    }
+  ]
+}

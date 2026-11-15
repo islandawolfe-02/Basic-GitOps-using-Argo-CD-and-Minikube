@@ -150,7 +150,7 @@ The learner saved the final browser observation, Pod logs and Grafana screenshot
 
 ## 5.1 Selector failure
 
-Status: executed on personal minikube on 2026-11-14; failure reproduced, recovery pending.
+Status: executed on personal minikube on 2026-11-14; failure reproduced, recovery recorded in section 5.2.
 
 Prediction (before sync):
 
@@ -175,10 +175,40 @@ Observed after sync:
 * The fresh Service port-forward failed with `error: timed out waiting for the condition` (`port-forward.txt`).
 
 The observations match the prediction: the Pod stayed healthy, but the Service selector matched no Pod.
-The fault is in the Service configuration; rebuilding the image would not repair it. Recovery through a
-corrective PR is still pending.
+The fault is in the Service configuration; rebuilding the image would not repair it. The selector restoration
+and recovery verification are recorded in section 5.2.
 
 Evidence: `evidence/m5-failure/`.
+
+## 5.2 Selector recovery
+
+Status: executed on personal minikube on 2026-11-14; selector recovery verified. Blue → green remains pending.
+
+* Recovery revision: `35f31eb5c0aec482d4e44b6a47d370225555c7e5` (`recovery-revision.txt`).
+* Argo sync succeeded at `2026-11-14T16:33:27Z` (`22:03:27 +05:30`); status **Synced / Healthy** at the recovery
+  revision. The Service was configured; the ConfigMap and Deployment were unchanged (`sync.txt`, `argo-app.txt`).
+* Service selector restored to `app: foundation`. The same Pod, `foundation-7d5c485f7d-bdp6l`, remained
+  `1/1 Running` with zero restarts (`state.txt`).
+* EndpointSlice `foundation-s5c8v` again listed port 8080 and endpoint `10.244.0.95`, matching the Pod IP
+  (`state.txt`).
+* Pod image ID: `docker://sha256:e563cb59f857747b351e1a10664086a2a49b2645a1b0b3c45d06ae82d83b4947`.
+  The SHA matches the Milestone 2 Mac image (`pod-image-id.txt`).
+* Local configuration check: `RESULT: PASS` (`config-check.txt`).
+* Fresh Service port-forward on `127.0.0.1:18081` worked; smoke checks returned `RESULT: PASS`, including health,
+  page, exact reference body, response headers, request-ID echo and missing-board 404 (`port-forward.txt`, `smoke.txt`).
+* Browser: Reference returned 200 with release `foundation-observe-a` and environment `workshop-blue`.
+  The action took 7 ms; its one attempt took 6 ms (`browser-observation.json`).
+* New request ID: `b9e887fa-e252-4692-92db-137da62f2485`.
+* Matching Pod log: `2026-11-14T16:42:13.3211060Z`, path `/api/boards/reference`, status 200, server duration 0 ms
+  (`pod-logs.txt`).
+* Grafana screenshot shows the same request ID, timestamp, session `p1-islandawolfe-02-mac`, status 200, release
+  and environment (`grafana.png`).
+* The cumulative Pod logs contain an earlier `LOKI_DELIVERY_WARNING` about a 2-second delivery timeout. The
+  recovery request is visible in Grafana, confirming that this request was delivered.
+
+Restoring the Service selector recovered access without rebuilding the image or replacing the Pod.
+
+Evidence: `evidence/m5-recovery/`. All filenames in this section refer to that directory.
 
 ## Milestone log
 | Time (UTC) | Milestone | Observation (command, result, identifiers) | Evidence file |
@@ -187,7 +217,7 @@ Evidence: `evidence/m5-failure/`.
 | 2026-11-14 13:43:41 (merge) | 3 deployment proposal | PR #3 merged as `8ae88b2f112824f7aef4dc3d0ef51eeb941335b2`; image IDs match and both CI gates passed. Separate self-review decision missing. See section 3. | [PR #3](https://github.com/islandawolfe-02/Basic-GitOps-using-Argo-CD-and-Minikube/pull/3) |
 | 2026-11-14 14:05:10 (browser request) | 4 deployment verification | Argo Synced/Healthy; image SHA and endpoint match; smoke PASS; request `71365f70-a24a-4872-89be-5935c0e88ed8` matches browser, Pod logs and Grafana. See section 4. | [evidence/m4-deploy/](evidence/m4-deploy/) |
 | 2026-11-14 15:57:42 (sync completed) | 5 selector failure | Revision `758e954c73aeeb56656d48e00de32ea6d2150071` synced; same Pod remained 1/1 Running with zero restarts; EndpointSlice endpoints unset; fresh port-forward timed out. Prediction matched. See section 5.1. | [evidence/m5-failure/](evidence/m5-failure/) |
-| | 5 recovery: corrective revision, fresh request | | evidence/m5-recovery/ |
+| 2026-11-14 16:42:13 (browser request) | 5 selector recovery | Revision `35f31eb5c0aec482d4e44b6a47d370225555c7e5` Synced/Healthy; endpoint restored to the same Pod; image unchanged; smoke PASS; request `b9e887fa-e252-4692-92db-137da62f2485` matches browser, Pod logs and Grafana. See section 5.2. | [evidence/m5-recovery/](evidence/m5-recovery/) |
 | | 5 blue → green: annotation bump, header | | evidence/m5-green/ |
 | | 6 fresh-clone reproduction: image ID, comparison | | evidence/m6-reproduce/ |
 
