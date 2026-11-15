@@ -1,0 +1,34 @@
+TIMESTAMP                  GROUP        KIND   NAMESPACE                          NAME    STATUS    HEALTH        HOOK  MESSAGE
+2026-11-15T21:08:19+05:30          ConfigMap  p1-islandawolfe-02   foundation-settings  OutOfSync                       
+2026-11-15T21:08:19+05:30            Service  p1-islandawolfe-02            foundation    Synced   Healthy              
+2026-11-15T21:08:19+05:30   apps  Deployment  p1-islandawolfe-02            foundation  OutOfSync  Healthy              
+2026-11-15T21:08:20+05:30   apps  Deployment  p1-islandawolfe-02            foundation  OutOfSync  Healthy              deployment.apps/foundation configured
+2026-11-15T21:08:20+05:30          ConfigMap  p1-islandawolfe-02   foundation-settings  OutOfSync                       configmap/foundation-settings configured
+2026-11-15T21:08:20+05:30            Service  p1-islandawolfe-02            foundation    Synced   Healthy              service/foundation unchanged
+
+Name:               argocd/p1-islandawolfe-02
+Project:            default
+Server:             https://kubernetes.default.svc
+Namespace:          p1-islandawolfe-02
+URL:                http://localhost:63352/applications/p1-islandawolfe-02
+Source:
+- Repo:             https://github.com/islandawolfe-02/Basic-GitOps-using-Argo-CD-and-Minikube.git
+  Target:           main
+  Path:             configuration/app
+SyncWindow:         Sync Allowed
+Sync Policy:        Manual
+Sync Status:        Synced to main (2eeb5e1)
+Health Status:      Progressing
+
+Operation:          Sync
+Sync Revision:      2eeb5e125cb690fd89662e93a81c5aa09fbfa65e
+Phase:              Succeeded
+Start:              2026-11-15 21:08:19 +0530 IST
+Finished:           2026-11-15 21:08:20 +0530 IST
+Duration:           1s
+Message:            successfully synced (all tasks run)
+
+GROUP  KIND        NAMESPACE           NAME                 STATUS  HEALTH       HOOK  MESSAGE
+       ConfigMap   p1-islandawolfe-02  foundation-settings  Synced                     configmap/foundation-settings configured
+       Service     p1-islandawolfe-02  foundation           Synced  Healthy            service/foundation unchanged
+apps   Deployment  p1-islandawolfe-02  foundation           Synced  Progressing        deployment.apps/foundation configured

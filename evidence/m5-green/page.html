@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Treasure hunt board preview</title>
+  <link rel="stylesheet" href="site.css">
+</head>
+<body>
+  <main>
+    <h1>Treasure hunt board preview</h1>
+    <p class="lead">Foundation page and board API in one image. The page calls a relative, same-origin API path.</p>
+
+    <section aria-labelledby="layout-heading">
+      <h2 id="layout-heading">Reference illustration (not a response)</h2>
+      <table class="board" aria-describedby="layout-text">
+        <tr><td>S start (0,0)</td><td></td><td>T treasure (2,0)</td></tr>
+        <tr><td></td><td class="wall">Wall (1,1)</td><td></td></tr>
+        <tr><td></td><td></td><td>E exit (2,2)</td></tr>
+      </table>
+      <p id="layout-text" class="small">Three by three: start (0,0), wall (1,1), treasure (2,0), exit (2,2); six initial moves.</p>
+    </section>
+
+    <section aria-labelledby="request-heading">
+      <h2 id="request-heading">Request a board</h2>
+      <label for="board">Fixture</label>
+      <select id="board">
+        <option value="reference">Reference</option>
+        <option value="missing">Missing</option>
+        <option value="slow">Slow</option>
+        <option value="overdue">Overdue</option>
+      </select>
+      <button id="load" type="button">Load board</button>
+      <p id="status" role="status" aria-live="polite">Client configuration: <span id="config">(loading)</span></p>
+      <h3>Browser observation</h3>
+      <pre id="observation">(no action yet)</pre>
+      <h3>Received body</h3>
+      <pre id="body">(nothing received)</pre>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

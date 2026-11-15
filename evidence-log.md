@@ -182,7 +182,7 @@ Evidence: `evidence/m5-failure/`.
 
 ## 5.2 Selector recovery
 
-Status: executed on personal minikube on 2026-11-14; selector recovery verified. Blue → green remains pending.
+Status: executed on personal minikube on 2026-11-14; selector recovery verified. Blue → green is recorded in section 5.3.
 
 * Recovery revision: `35f31eb5c0aec482d4e44b6a47d370225555c7e5` (`recovery-revision.txt`).
 * Argo sync succeeded at `2026-11-14T16:33:27Z` (`22:03:27 +05:30`); status **Synced / Healthy** at the recovery
@@ -210,6 +210,40 @@ Restoring the Service selector recovered access without rebuilding the image or 
 
 Evidence: `evidence/m5-recovery/`. All filenames in this section refer to that directory.
 
+## 5.3 Blue → green
+
+Status: executed on personal minikube on 2026-11-15; green deployment verified, evidence PR pending.
+
+* Configuration PR: [#9](https://github.com/islandawolfe-02/Basic-GitOps-using-Argo-CD-and-Minikube/pull/9).
+  ConfigMap `LAB_ENV` and `runtime.env` changed to `workshop-green`, and `academy/config-revision` increased
+  from `"2"` to `"3"` in the same commit. The prediction was recorded in the PR before sync.
+* Deployed revision: `2eeb5e125cb690fd89662e93a81c5aa09fbfa65e` (`deployed-revision.txt`).
+  Argo reports **Synced / Healthy** at that revision (`argo-app.txt`).
+* Local configuration check: `RESULT: PASS`, including matching environments and the annotation change
+  `2 -> 3` (`config-check.txt`). Configuration PR CI also passed in
+  [p1-gates run 43730381115](https://github.com/islandawolfe-02/Basic-GitOps-using-Argo-CD-and-Minikube/actions/runs/43730381115).
+* New Pod: `foundation-6554c98847-wfpmk`, `1/1 Running`, zero restarts, config revision `3`.
+  The old Pod, `foundation-7d5c485f7d-bdp6l`, showed Completed in the saved state (`state.txt`, `running-pods.json`).
+* Ready endpoint: `10.244.0.96`, matching the new Pod IP (`state.txt`).
+* Pod image ID: `docker://sha256:e563cb59f857747b351e1a10664086a2a49b2645a1b0b3c45d06ae82d83b4947`.
+  The SHA matches the Milestone 2 Mac image (`pod-image-id.txt`).
+* Fresh port-forward on `127.0.0.1:18081` worked. Smoke checks returned `RESULT: PASS`, including the exact
+  reference body and `X-Lab-Environment: workshop-green`; release remained `foundation-observe-a`
+  (`port-forward.txt`, `smoke.txt`, `reference-headers.txt`, `reference-board.json`).
+* Browser: Reference returned 200 with release `foundation-observe-a` and environment `workshop-green`.
+  The action took 62 ms; its one attempt took 61 ms (`browser-observation.json`).
+* New request ID: `1320ef47-3114-4cec-aa17-75a6c053910f`.
+* Matching Pod log: `2026-11-15T15:41:58.2315687Z`, path `/api/boards/reference`, status 200, server duration 2 ms.
+  No `LOKI_DELIVERY_WARNING` appears in the saved green Pod logs (`pod-logs.txt`).
+* Grafana screenshot shows the same request ID, timestamp, session `p1-islandawolfe-02-mac`, status 200,
+  release and `workshop-green` environment (`grafana.png`).
+
+The Pod-template annotation change produced a new Pod that read the green environment settings. The image,
+reference board and release stayed the same. The selector failure, recovery and environment-change checks
+are complete; committing and reviewing the green evidence remain pending.
+
+Evidence: `evidence/m5-green/`. All filenames in this section refer to that directory.
+
 ## Milestone log
 | Time (UTC) | Milestone | Observation (command, result, identifiers) | Evidence file |
 |---|---|---|---|
@@ -218,7 +252,7 @@ Evidence: `evidence/m5-recovery/`. All filenames in this section refer to that d
 | 2026-11-14 14:05:10 (browser request) | 4 deployment verification | Argo Synced/Healthy; image SHA and endpoint match; smoke PASS; request `71365f70-a24a-4872-89be-5935c0e88ed8` matches browser, Pod logs and Grafana. See section 4. | [evidence/m4-deploy/](evidence/m4-deploy/) |
 | 2026-11-14 15:57:42 (sync completed) | 5 selector failure | Revision `758e954c73aeeb56656d48e00de32ea6d2150071` synced; same Pod remained 1/1 Running with zero restarts; EndpointSlice endpoints unset; fresh port-forward timed out. Prediction matched. See section 5.1. | [evidence/m5-failure/](evidence/m5-failure/) |
 | 2026-11-14 16:42:13 (browser request) | 5 selector recovery | Revision `35f31eb5c0aec482d4e44b6a47d370225555c7e5` Synced/Healthy; endpoint restored to the same Pod; image unchanged; smoke PASS; request `b9e887fa-e252-4692-92db-137da62f2485` matches browser, Pod logs and Grafana. See section 5.2. | [evidence/m5-recovery/](evidence/m5-recovery/) |
-| | 5 blue → green: annotation bump, header | | evidence/m5-green/ |
+| 2026-11-15 15:41:58 (browser request) | 5 blue → green | Revision `2eeb5e125cb690fd89662e93a81c5aa09fbfa65e` Synced/Healthy; annotation 3 produced a new Pod; endpoint matches; image unchanged; smoke PASS; request `1320ef47-3114-4cec-aa17-75a6c053910f` matches browser, Pod logs and Grafana with workshop-green. See section 5.3. | [evidence/m5-green/](evidence/m5-green/) |
 | | 6 fresh-clone reproduction: image ID, comparison | | evidence/m6-reproduce/ |
 
 Individual reflection: assistance used ____; one rejected repair and why ____; one next learning step ____.
