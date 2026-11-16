@@ -314,6 +314,14 @@ To resume, open Docker Desktop, run `minikube start`, select context `minikube`,
 screenshots and raw evidence are needed if log records are lost when the Loki container is replaced.
 Never commit `publish/`, kubeconfig, tokens or credentials.
 
+## Optional CD pipeline
+
+An additional, manually triggered workflow can publish an ARM64/AMD64 image to this app's GHCR package and request
+deployment through `ARGO-CD-GitOPS-Deployments`. The existing local-image and manual deployment steps above remain
+available. See [the optional CD guide](docs/optional-cd.md) for inputs, setup and the receiving workflow contract.
+The app-side workflow is implemented; the receiver and Argo bootstrap are pending, and this route has not yet been
+executed on GitHub/minikube.
+
 ## BP items still pending
 
 Yalla scaffolding, the BP pull request, the BP registry and image promotion, and the BP deployment and status/log

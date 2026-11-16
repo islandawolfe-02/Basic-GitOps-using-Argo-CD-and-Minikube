@@ -1,0 +1,232 @@
+name: Optional image publish and deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_image:
+        description: Build, smoke-test and publish a new image
+        type: boolean
+        default: false
+      deploy:
+        description: Request deployment through ARGO-CD-GitOPS-Deployments
+        type: boolean
+        default: false
+      existing_image:
+        description: Full ghcr.io image@sha256:digest (required for deploy without build)
+        type: string
+        default: ''
+      namespace:
+        description: New deployment namespace (required for deploy)
+        type: string
+        default: ''
+      deployment_name:
+        description: Name for this installation
+        type: string
+        default: foundation-cd
+      app_port:
+        description: Mac port-forward port for the new app
+        type: string
+        default: '18090'
+      grafana_port:
+        description: Mac port-forward port for the new Grafana
+        type: string
+        default: '3001'
+      loki_port:
+        description: Mac port-forward port for the new Loki
+        type: string
+        default: '3101'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: optional-cd-${{ inputs.namespace }}-${{ inputs.deployment_name }}
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  publish-deploy:
+    if: ${{ inputs.build_image || inputs.deploy }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      packages: write
+    env:
+      CD_REPOSITORY: islandawolfe-02/ARGO-CD-GitOPS-Deployments
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Check request validation
+        run: python3 -m unittest discover -s scripts -p test_cd_request.py
+
+      - name: Validate inputs and prepare deployment request
+        id: request
+        env:
+          BUILD_IMAGE: ${{ inputs.build_image }}
+          DEPLOY: ${{ inputs.deploy }}
+          EXISTING_IMAGE: ${{ inputs.existing_image }}
+          DEPLOY_NAMESPACE: ${{ inputs.namespace }}
+          DEPLOYMENT_NAME: ${{ inputs.deployment_name }}
+          APP_PORT: ${{ inputs.app_port }}
+          GRAFANA_PORT: ${{ inputs.grafana_port }}
+          LOKI_PORT: ${{ inputs.loki_port }}
+          CD_DISPATCH_TOKEN: ${{ secrets.CD_DISPATCH_TOKEN }}
+        run: |
+          LAB_ENV="$(sed -n 's/^LAB_ENV=//p' runtime.env)" python3 scripts/cd_request.py
+          mkdir -p smoke-evidence
+
+      - name: Set up ARM emulation
+        uses: docker/setup-qemu-action@v4
+        with:
+          platforms: arm64
+
+      - name: Set up image builder
+        if: ${{ inputs.build_image }}
+        uses: docker/setup-buildx-action@v4
+
+      - name: Build image for pre-publication checks
+        if: ${{ inputs.build_image }}
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: Containerfile
+          platforms: linux/amd64
+          load: true
+          tags: ci/foundation:${{ github.run_id }}
+
+      - name: Smoke-test before publishing
+        if: ${{ inputs.build_image }}
+        env:
+          EXPECTED_ENV: ${{ steps.request.outputs.lab_env }}
+        run: |
+          trap 'docker logs foundation-prepublish > smoke-evidence/prepublish-container.log 2>&1; docker rm -f foundation-prepublish >/dev/null' EXIT
+          docker run -d --name foundation-prepublish -p 127.0.0.1:18090:8081 \
+            --env-file runtime.env -e ASPNETCORE_URLS=http://0.0.0.0:8081 \
+            -e LAB_SESSION="cd-${GITHUB_RUN_ID}-prepublish" "ci/foundation:${GITHUB_RUN_ID}"
+          bash scripts/smoke.sh http://127.0.0.1:18090 "$EXPECTED_ENV" smoke-evidence/prepublish \
+            | tee smoke-evidence/prepublish.txt
+
+      - name: Log in to the app's GHCR package
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish ARM64 and AMD64 images
+        if: ${{ inputs.build_image }}
+        id: publish
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: Containerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.request.outputs.image_name }}:sha-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+
+      - name: Select exact registry image
+        env:
+          IMAGE_NAME: ${{ steps.request.outputs.image_name }}
+          PUBLISHED_DIGEST: ${{ steps.publish.outputs.digest }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import re
+          from pathlib import Path
+
+          path = Path('deployment-request.json')
+          request = json.loads(path.read_text())
+          digest = os.environ['PUBLISHED_DIGEST']
+          if digest:
+              if not re.fullmatch(r'sha256:[0-9a-f]{64}', digest):
+                  raise SystemExit('Invalid digest returned by the publisher')
+              request['inputs']['image'] = os.environ['IMAGE_NAME'] + '@' + digest
+          path.write_text(json.dumps(request, indent=2) + '\n')
+          with open(os.environ['GITHUB_ENV'], 'a') as output:
+              output.write('CD_IMAGE=' + request['inputs']['image'] + '\n')
+          PY
+
+      - name: Check the exact registry image on both architectures
+        env:
+          EXPECTED_ENV: ${{ steps.request.outputs.lab_env }}
+          BUILT_IMAGE: ${{ inputs.build_image }}
+        run: |
+          log=smoke-evidence/registry-container.log
+          trap 'docker logs foundation-registry > "$log" 2>&1; docker rm -f foundation-registry >/dev/null' EXIT
+          for arch in amd64 arm64; do
+            log="smoke-evidence/registry-${arch}-container.log"
+            docker pull --platform "linux/$arch" "$CD_IMAGE"
+            docker run -d --platform "linux/$arch" --name foundation-registry \
+              -p 127.0.0.1:18090:8081 --env-file runtime.env \
+              -e ASPNETCORE_URLS=http://0.0.0.0:8081 \
+              -e LAB_SESSION="cd-${GITHUB_RUN_ID}-${arch}" "$CD_IMAGE"
+            docker inspect foundation-registry > "smoke-evidence/registry-${arch}-inspect.json"
+            python3 - "$arch" <<'PY'
+          import json
+          import os
+          import re
+          import sys
+          from pathlib import Path
+
+          arch = sys.argv[1]
+          container = json.loads(Path(f'smoke-evidence/registry-{arch}-inspect.json').read_text())[0]
+          labels = container['Config'].get('Labels') or {}
+          expected_source = 'https://github.com/' + os.environ['GITHUB_REPOSITORY']
+          revision = labels.get('org.opencontainers.image.revision', '')
+          if labels.get('org.opencontainers.image.source') != expected_source:
+              raise SystemExit('Image source label must match this app repository')
+          if not re.fullmatch(r'[0-9a-f]{40}', revision):
+              raise SystemExit('Image must have a source commit label')
+          if os.environ['BUILT_IMAGE'] == 'true' and revision != os.environ['GITHUB_SHA']:
+              raise SystemExit('Published image source commit does not match this build')
+          path = Path('deployment-request.json')
+          request = json.loads(path.read_text())
+          if arch == 'arm64' and request['inputs']['source_revision'] != revision:
+              raise SystemExit('ARM64 and AMD64 images must have the same source commit')
+          request['inputs']['source_revision'] = revision
+          path.write_text(json.dumps(request, indent=2) + '\n')
+          PY
+            bash scripts/smoke.sh http://127.0.0.1:18090 "$EXPECTED_ENV" "smoke-evidence/registry-$arch" \
+              | tee "smoke-evidence/registry-$arch.txt"
+            docker logs foundation-registry > "$log" 2>&1
+            docker rm -f foundation-registry >/dev/null
+          done
+          trap - EXIT
+          {
+            echo '### Verified registry image'
+            echo "\`$CD_IMAGE\`"
+            echo 'AMD64 and ARM64 smoke checks passed. This is separate from the original Mac image.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Request deployment in the shared repository
+        if: ${{ inputs.deploy }}
+        env:
+          GH_TOKEN: ${{ secrets.CD_DISPATCH_TOKEN }}
+        run: |
+          gh api --method POST "repos/$CD_REPOSITORY/actions/workflows/deploy.yml/dispatches" \
+            --input deployment-request.json
+          {
+            echo '### Deployment requested'
+            echo "Follow the receiving run at https://github.com/$CD_REPOSITORY/actions"
+            echo 'This confirms the request was accepted; check Argo CD and minikube for the rollout result.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Save image identity and smoke results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: optional-cd-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            smoke-evidence/
+            deployment-request.json
+          if-no-files-found: ignore
