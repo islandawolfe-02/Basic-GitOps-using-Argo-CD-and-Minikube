@@ -87,7 +87,6 @@ jobs:
           platforms: arm64
 
       - name: Set up image builder
-        if: ${{ inputs.build_image }}
         uses: docker/setup-buildx-action@v4
 
       - name: Build image for pre-publication checks
@@ -161,15 +160,26 @@ jobs:
           EXPECTED_ENV: ${{ steps.request.outputs.lab_env }}
           BUILT_IMAGE: ${{ inputs.build_image }}
         run: |
+          docker buildx imagetools inspect --raw "$CD_IMAGE" > smoke-evidence/registry-index.json
           log=smoke-evidence/registry-container.log
           trap 'docker logs foundation-registry > "$log" 2>&1; docker rm -f foundation-registry >/dev/null' EXIT
           for arch in amd64 arm64; do
             log="smoke-evidence/registry-${arch}-container.log"
-            docker pull --platform "linux/$arch" "$CD_IMAGE"
+            platform_image="$(PYTHONPATH=scripts python3 - "$CD_IMAGE" "$arch" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+          from cd_request import platform_reference
+
+          index = json.loads(Path('smoke-evidence/registry-index.json').read_text())
+          print(platform_reference(sys.argv[1], index, sys.argv[2]))
+          PY
+            )"
+            docker pull --platform "linux/$arch" "$platform_image"
             docker run -d --platform "linux/$arch" --name foundation-registry \
               -p 127.0.0.1:18090:8081 --env-file runtime.env \
               -e ASPNETCORE_URLS=http://0.0.0.0:8081 \
-              -e LAB_SESSION="cd-${GITHUB_RUN_ID}-${arch}" "$CD_IMAGE"
+              -e LAB_SESSION="cd-${GITHUB_RUN_ID}-${arch}" "$platform_image"
             docker inspect foundation-registry > "smoke-evidence/registry-${arch}-inspect.json"
             python3 - "$arch" <<'PY'
           import json

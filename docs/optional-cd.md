@@ -39,6 +39,11 @@ The workflow links the package to this repository and labels its source commit.
 It uses a unique source-commit/run/attempt tag and records the immutable digest
 in its summary and the `optional-cd-<run>-<attempt>` artifact.
 
+The registry smoke checks pull each architecture by its own child manifest
+digest to avoid Docker's cross-platform digest-reference collision. The saved
+deployment request keeps the parent multi-platform digest for minikube to select
+its matching architecture.
+
 After the first successful publication, make the package public in its GitHub
 package settings so minikube can pull it without credentials. GitHub repository
 visibility does not automatically make a new package public.

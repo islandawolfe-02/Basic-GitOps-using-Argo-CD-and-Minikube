@@ -6,6 +6,21 @@ import re
 from pathlib import Path
 
 
+def platform_reference(image, index, architecture):
+    """Select a child manifest so Docker stores each architecture separately."""
+    matches = [
+        manifest.get('digest', '')
+        for manifest in index.get('manifests', [])
+        if manifest.get('platform', {}).get('os') == 'linux'
+        and manifest.get('platform', {}).get('architecture') == architecture
+    ]
+    if len(matches) != 1:
+        raise ValueError(f'Expected one linux/{architecture} image manifest, found {len(matches)}')
+    if not re.fullmatch(r'sha256:[0-9a-f]{64}', matches[0]):
+        raise ValueError(f'Invalid linux/{architecture} image digest')
+    return image.split('@', 1)[0] + '@' + matches[0]
+
+
 def prepare_request(values):
     repository = values['GITHUB_REPOSITORY']
     revision = values['GITHUB_SHA']
