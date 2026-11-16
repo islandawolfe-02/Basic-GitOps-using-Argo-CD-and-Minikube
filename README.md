@@ -319,8 +319,9 @@ Never commit `publish/`, kubeconfig, tokens or credentials.
 An additional, manually triggered workflow can publish an ARM64/AMD64 image to this app's GHCR package and request
 deployment through `ARGO-CD-GitOPS-Deployments`. The existing local-image and manual deployment steps above remain
 available. See [the optional CD guide](docs/optional-cd.md) for inputs, setup and the receiving workflow contract.
-The app-side workflow is implemented; the receiver and Argo bootstrap are pending, and this route has not yet been
-executed on GitHub/minikube.
+The app-side publishing workflow [passed on GitHub on 2026-11-16](https://github.com/islandawolfe-02/Basic-GitOps-using-Argo-CD-and-Minikube/actions/runs/43907745486),
+including ARM64 and AMD64 registry smoke checks. The deployment request was skipped; the receiver, Argo bootstrap
+and deployment verification remain pending.
 
 ## BP items still pending
 
