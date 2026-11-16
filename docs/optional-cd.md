@@ -11,10 +11,15 @@ the temporary image built by `p1-gates`.
 
 ## Current status
 
-The app-side workflow is implemented. The receiving `deploy.yml` workflow and
-Argo bootstrap in `islandawolfe-02/ARGO-CD-GitOPS-Deployments` are step 6 and must
-exist before selecting **Deploy**. Publishing and deployment have not yet been
-executed or verified on GitHub/minikube.
+The app-side publishing workflow passed on GitHub on 2026-11-16:
+[run #2](https://github.com/islandawolfe-02/Basic-GitOps-using-Argo-CD-and-Minikube/actions/runs/43907745486),
+source commit `d976bded19d03788f3523ebde942375902856b4e`. Pre-publication
+checks, ARM64/AMD64 publication and both registry smoke checks passed; the
+deployment request was skipped.
+
+The receiving `deploy.yml` workflow and Argo bootstrap in
+`islandawolfe-02/ARGO-CD-GitOPS-Deployments` are step 6 and must exist before
+selecting **Deploy**. Deployment through this route remains pending.
 
 ## Run the workflow
 
