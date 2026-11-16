@@ -1,7 +1,36 @@
 import json
 import unittest
 
-from cd_request import prepare_request
+from cd_request import platform_reference, prepare_request
+
+
+class PlatformReferenceTests(unittest.TestCase):
+    def setUp(self):
+        self.image = 'ghcr.io/example/foundation@sha256:' + 'a' * 64
+        self.index = {'manifests': [
+            {'digest': 'sha256:' + 'b' * 64, 'platform': {'os': 'linux', 'architecture': 'amd64'}},
+            {'digest': 'sha256:' + 'c' * 64, 'platform': {'os': 'linux', 'architecture': 'arm64', 'variant': 'v8'}},
+            {'digest': 'sha256:' + 'd' * 64, 'platform': {'os': 'unknown', 'architecture': 'unknown'}},
+        ]}
+
+    def test_platform_pulls_use_distinct_children_of_the_pinned_index(self):
+        amd64 = platform_reference(self.image, self.index, 'amd64')
+        arm64 = platform_reference(self.image, self.index, 'arm64')
+        self.assertEqual(amd64, 'ghcr.io/example/foundation@sha256:' + 'b' * 64)
+        self.assertEqual(arm64, 'ghcr.io/example/foundation@sha256:' + 'c' * 64)
+        self.assertNotEqual(amd64, arm64)
+
+    def test_missing_or_ambiguous_platform_is_rejected(self):
+        with self.assertRaises(ValueError):
+            platform_reference(self.image, self.index, 'ppc64le')
+        self.index['manifests'].append(self.index['manifests'][0])
+        with self.assertRaises(ValueError):
+            platform_reference(self.image, self.index, 'amd64')
+
+    def test_invalid_platform_digest_is_rejected(self):
+        self.index['manifests'][0]['digest'] = 'not-a-digest'
+        with self.assertRaises(ValueError):
+            platform_reference(self.image, self.index, 'amd64')
 
 
 class RequestTests(unittest.TestCase):
