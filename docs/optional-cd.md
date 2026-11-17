@@ -63,6 +63,11 @@ Select **Deploy: Yes**, enter your namespace and deployment name, and choose
 three distinct Mac port-forward ports. Defaults are app `18090`, Grafana `3001`
 and Loki `3101`; these values do not start a port-forward on your Mac.
 
+Namespace and deployment name must each be 1–63 characters, use only lowercase
+letters (`a-z`), digits (`0-9`) and hyphens (`-`), and start and end with a letter
+or digit. For example, use `demo-1`; `demo_1`, uppercase letters and spaces are
+not accepted.
+
 The workflow rejects the original project namespace, `observability`, `argocd`,
 `default`, `kube-*`, and the original project/reproduction ports. This checks the
 request only: the receiver must enforce resource ownership, and you must check
